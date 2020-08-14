@@ -5,9 +5,7 @@
 * [Technologies](#technologies)
 * [Setup](#setup)
 * [Features](#features)
-* [Status](#status)
-* [Inspiration](#inspiration)
-* [Contact](#contact)
+* [Contribution](#contact)
 
 ## Technologies
 * C++
@@ -26,5 +24,5 @@
 3. Install Qt plugin for Visual Studio
     - Open Visual Studio -> Extensions -> Manage Extensions -> type Qt in search bar -> install Qt Visual Studio Tools
 
-## Contact
+## Contribution
 Created by Myung Lee
