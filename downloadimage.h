@@ -22,6 +22,7 @@ private:
     Ui::DownloadImageClass ui; // UI object
     QNetworkAccessManager* manager; // Allows to download image from online
     QSize imgSize; // Original image size once fetched
+    QByteArray content; // Content of image
     int remainHeight = 0; // Height other than image label 
 
 private slots:

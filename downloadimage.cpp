@@ -1,12 +1,14 @@
 #include "DownloadImage.h"
 
 DownloadImage::DownloadImage(QWidget *parent)
-    : QMainWindow(parent)
-{
+    : QMainWindow(parent) {
     ui.setupUi(this);
 
     // Event filter to handle resize event
     this->installEventFilter(this);
+    
+    // Initialization
+    manager = new QNetworkAccessManager(this);
 
     // Event handler when menu items or button are clicked
     connect(ui.exitAction_2, SIGNAL(triggered()), this, SLOT(exit()));
@@ -16,8 +18,6 @@ DownloadImage::DownloadImage(QWidget *parent)
     // Placeholder for input text
     ui.fetchInput->setPlaceholderText("Please enter the image URL here");
 
-    // Initialization
-    manager = new QNetworkAccessManager(this);
 }
 
 // Exit the window
@@ -30,8 +30,9 @@ void DownloadImage::fetch() {
     QUrl url; // url from input field
 
     // Connect to the given URL from input field
-    url = QUrl(ui.fetchInput->toPlainText());
-    manager->get(QNetworkRequest(url));
+    QNetworkRequest request;
+    request.setUrl(QUrl(ui.fetchInput->toPlainText()));
+    manager->get(request);
 
     // Handle the fetched image
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(fileDownloaded(QNetworkReply*)));
@@ -41,13 +42,20 @@ void DownloadImage::fetch() {
 void DownloadImage::fileDownloaded(QNetworkReply* reply) {
     QPixmap img; // image
     QString contentType; // MIME type
-    
+    QByteArray temp; // Prevent from null value to load image
+
     // Get MIME type
     contentType = reply->header(QNetworkRequest::ContentTypeHeader).toString();
-    
+
+    // Allows to fetch different images
+    temp = reply->readAll();
+    if (temp != "") {
+        content = temp;
+    }
+
     // If MIME type is image, then show the image file
     if (contentType.contains(QRegExp("image/(png|jpeg|gif)"))) {
-        img.loadFromData(reply->readAll()); // Load image
+        img.loadFromData(content); // Load image
         ui.image->setScaledContents(true); // Allows to scale the contents
         ui.image->resize(img.size()); // Resize the image label
         ui.errorMessage->setText(""); // Reset the error message
@@ -60,7 +68,6 @@ void DownloadImage::fileDownloaded(QNetworkReply* reply) {
     }
     // Show error message for invalid request 
     else {
-        img.loadFromData(NULL);
         ui.errorMessage->setText("Please enter the valid url to load the image");
     }
 
